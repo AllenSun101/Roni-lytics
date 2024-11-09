@@ -1,0 +1,11 @@
+[[pages]]
+path = "_pages/home_page.py"
+name = "Home"
+
+
+[[pages]]
+path = "_pages/another_page.py"
+name = "Another Page"
+
+
+
