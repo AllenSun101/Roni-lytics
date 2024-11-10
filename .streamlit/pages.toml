@@ -11,3 +11,7 @@ name = "Orders"
 [[pages]]
 path = "_pages/sales.py"
 name = "Sales"
+
+[[pages]]
+path = "_pages/social_media.py"
+name = "Social Media"

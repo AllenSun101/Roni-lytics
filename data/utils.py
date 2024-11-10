@@ -10,3 +10,8 @@ def load_data():
 def load_special_events_data():
     df = pd.read_csv("https://raw.githubusercontent.com/Aran203/ronis-viz-td-2024/refs/heads/main/data/special_events.csv", parse_dates = ["Start_Time", "End_Time"])
     return df
+
+
+def load_instagram_data():
+    df = pd.read_csv("https://raw.githubusercontent.com/Aran203/ronis-viz-td-2024/refs/heads/main/data/instagram_posts.csv", parse_dates = ["Date"])
+    return df
