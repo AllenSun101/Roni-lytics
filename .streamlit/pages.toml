@@ -8,4 +8,6 @@ path = "_pages/another_page.py"
 name = "Another Page"
 
 
-
+[[pages]]
+path = "_pages/sales.py"
+name = "Sales"
