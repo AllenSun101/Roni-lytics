@@ -14,3 +14,7 @@ icon = "🧾"
 path = "_pages/sales.py"
 name = "Revenues"
 icon = "💵"
+
+[[pages]]
+path = "_pages/social_media.py"
+name = "Social Media"
