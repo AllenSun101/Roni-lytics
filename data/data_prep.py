@@ -165,7 +165,8 @@ while index < data_len:
         question = data[index][2]
         result = data[index][1]
         if question == "Choose Your Cheese":
-            storage['cheese'].append(result)
+            if (result != "MIX"):
+                storage['cheese'].append(result)
 
         elif question == "Choose Your Meats":
             if (result != 'No Meat'):
@@ -191,8 +192,9 @@ while index < data_len:
             storage['cheese'].append(result)
         
         elif question == "Do you want Mac and Cheese added inside?":
-            storage['added_mac'].append(result)
-            storage['cost'] += 1.99
+            if (result != "No Mac"):
+                storage['added_mac'].append(result)
+                storage['cost'] += 1.99
         elif question == '':
             storage['note'] = result
         elif question == 'Mix Bases':
@@ -210,6 +212,11 @@ while index < data_len:
             newOrder = True
         else:
             index += 1
+    if (len(storage['added_mac']) == 0):
+        if (storage['item'] == 'Grilled Cheese Sandwich'):
+            storage['added_mac'].append('No Mac')
+        else:
+            storage['added_mac'].append('N/A')
     proccess.append(storage)
 
 daf = pd.DataFrame(proccess)
