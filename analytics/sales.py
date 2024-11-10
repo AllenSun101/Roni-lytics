@@ -1,38 +1,60 @@
+from datetime import timedelta
 import pandas as pd
 
-def sales(start_date, start_time, end_date, end_time):
-    df = pd.read_csv("https://raw.githubusercontent.com/Aran203/ronis-viz-td-2024/refs/heads/main/data/data_processed.csv", parse_dates = ["time"])
+def get_revenues(df, start_time, end_time):
+    data = df.loc[(df['time'] >= start_time) & (df['time'] <= end_time)]
+    data = data.copy()
 
-    #dfMonth = df.loc[df['Sent Date'].dt.month_name().isin(months)]
-
-    #dfMonth['day'] = dfMonth['Sent Date'].dt.day
-    #days = dfMonth.groupby(dfMonth["day"])['Order ID'].nunique()
-
-    start_year, start_month, start_day = start_date.split("-")
-    end_year, end_month, end_day = end_date.split("-")
-
-    print(start_month)
-
-    # if monthly, use all data
-    if start_year != end_year or start_month != end_month:
-        pass
-    # if daily
-    elif start_day != end_day:
-        df = df[df['time'].dt.month == start_month]
-    # if hourly
+    if (end_time - start_time > timedelta(days = 69)):
+        data["Time"] = data['time'].dt.strftime('%m')  
+        out = data.groupby("Time")['cost'].sum()
+        out = out.to_frame(name = "Total Revenue").reset_index()
+        out = out.rename(columns={"revenue": "Total Revenue"})
+    elif ((start_time.month != end_time.month) or (end_time - start_time > timedelta(days = 3))):
+        data["Time"] = data['time'].dt.strftime('%m-%d')  
+        out = data.groupby("Time")['cost'].sum()
+        out = out.to_frame(name = "Total Revenue").reset_index()
+        out = out.rename(columns={"revenue": "Total Revenue"})
     else:
-        pass
-    
-    timestamps = []
-    revenue = []
-    current_timestamp = 0
-    current_revenue_count = 0
+        out = data.groupby(pd.Grouper(key='time', freq='1h'))['cost'].sum()
+        out = out.to_frame(name="Total Revenue").reset_index()
+        out = out.rename(columns={"revenue": "Total Revenue"})
+        print(out)
+    pd.set_option('display.max_rows', None)  # Show all rows
+    pd.set_option('display.max_columns', None)  # Show all columns
 
-    for row in df:
+                
+    print(data[["time", "cost"]])
 
-        # if move to next, reset
-        pass
+    return out
 
-    return timestamps, revenue
 
-print(sales("2024-04-13", "20:00", "2024-09-30", "19:00"))
+
+
+# def orders_in_month(df, month):
+#     dfMonth = df.loc[df['Sent Date'].dt.month_name() == month]
+#     dfMonth = dfMonth.copy()
+
+#     dfMonth[f'{month}'] = dfMonth['Sent Date'].dt.day
+#     days = dfMonth.groupby(dfMonth[f'{month}'])['Order ID'].nunique()
+
+#     days = days.to_frame()
+#     days = days.rename(columns = {"Order ID": "Orders"})
+
+#     return days
+
+# def orders_in_day(df, month, day):
+#     data = df.loc[(df['Sent Date'].dt.month_name() == month) & (df['Sent Date'].dt.day == day)]
+#     data = data.copy()
+
+#     data['Hour of Day'] = data['Sent Date'].dt.hour
+#     hours = data.groupby(data['Hour of Day'])['Order ID'].nunique()
+
+#     hours = hours.to_frame()
+#     hours = hours.rename(columns = {"Order ID": "Orders"})
+
+#     return hours
+
+
+
+

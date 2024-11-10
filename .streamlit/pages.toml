@@ -9,5 +9,5 @@ name = "Orders"
 
 
 [[pages]]
-path = "_pages/sales.py"
+path = "_pages/sales_page.py"
 name = "Sales"

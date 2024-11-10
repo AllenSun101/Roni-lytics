@@ -4,11 +4,11 @@ import pandas as pd
 from datetime import *
 
 from data.utils import load_data
-from analytics.orders import *
+from analytics.sales import *
 
 data = load_data()
 
-st.title("Orders Hub")
+st.title("Revenue Hub")
 
 
 # Getting inputs through a container
@@ -53,27 +53,27 @@ end_datetime = datetime.combine(end_date, end_time)
 if (start_datetime > end_datetime):
     st.write(":red[Error: Start time must be before end time]")
 else:
-    test = get_num_orders(data, start_datetime, end_datetime)
+    test = get_revenues(data, start_datetime, end_datetime)
 
     if (end_datetime - start_datetime > timedelta(days = 69)):
         chart = alt.Chart(test).mark_line().encode(
             x=alt.X('Time:T', title='Date', axis = alt.Axis(format='%B', tickCount = 4)),  
-            y=alt.Y('Order Count:Q', title='Order Count')  
+            y=alt.Y('Total Revenue:Q', title='Revenue')  
         )
     elif (end_datetime - start_datetime > timedelta(days = 6)):
         chart = alt.Chart(test).mark_line().encode(
             x=alt.X('Time:T', title='Date', axis = alt.Axis(format='%b %d')),  
-            y=alt.Y('Order Count:Q', title='Order Count')  
+            y=alt.Y('Total Revenue:Q', title='Revenue')  
         )
     elif (end_datetime - start_datetime > timedelta(days = 3)):
         chart = alt.Chart(test).mark_line().encode(
             x=alt.X('Time:T', title='Date', axis = alt.Axis(format='%b %d', tickCount = 3)),  
-            y=alt.Y('Order Count:Q', title='Order Count')  
+            y=alt.Y('Total Revenue:Q', title='Revenue')  
         )
     else:
         chart = alt.Chart(test).mark_line().encode(
             x=alt.X('time:T', title = 'Date', axis = alt.Axis(format='%b-%d-%I-%p', tickCount = 14)),  
-            y=alt.Y('Order Count:Q', title='Order Count')  
+            y=alt.Y('Total Revenue:Q', title='Revenue')  
         )
 
 
