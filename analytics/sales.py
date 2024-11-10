@@ -19,12 +19,6 @@ def get_revenues(df, start_time, end_time):
         out = data.groupby(pd.Grouper(key='time', freq='1h'))['cost'].sum()
         out = out.to_frame(name="Total Revenue").reset_index()
         out = out.rename(columns={"revenue": "Total Revenue"})
-        
-    pd.set_option('display.max_rows', None)  # Show all rows
-    pd.set_option('display.max_columns', None)  # Show all columns
-
-                
-    # print(data[["time", "cost"]])
 
     return out
 
