@@ -18,3 +18,4 @@ icon = "💵"
 [[pages]]
 path = "_pages/social_media.py"
 name = "Social Media"
+icon = "📸"
