@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-
+import csv
 
 sides = {
     "No Side": 0.00,
@@ -35,6 +35,15 @@ drinks = {
     "": 0.00
 }
 
+menu = {
+    "Buffalo Chicken": ["Cheddar", "Chicken", "Onions", "Buffalo"],
+    "Texas BBQ": ["Pepper Jack", "Brisket", "Jalapenos", "BBQ"],
+    "Garden Mac": ["Cheddar", "Broccoli", "Tomatoes", "Ranch"],
+    "Chicken Alfredo": ["Alfredo", "Chicken", "Broccoli", "Pesto"],
+    "Chicken Bacon Ranch": ["Cheddar", "Chicken", "Bacon", "Ranch"],
+    "Classic Mac": ["Cheddar", "Breadcrumbs", "Garlic Parmesan"]
+}
+
 meats = {
     "No Meat": 0.00,
     "Grilled Chicken": 1.99,
@@ -44,15 +53,18 @@ meats = {
     "Ham": 1.99
 }
 
-FIELDS = ['orderID', 'time', 'item', 'noods', 'added_mac', 'cheese', 'meats', 'tops', 'drizzle', 'sides', 'drinks', 'utensils', 'cost']
+cheeses = ['Cheddar', 'Alfredo', 'Pepper Jack']
+meat = ['Brisket', 'Chicken', 'Bacon']
+sauce = ['Ranch', 'Garlic Parmesan', 'Buffalo']
+
+
+FIELDS = ['orderID', 'time', 'item', 'noodles', 'added_mac', 'cheese', 'meats', 'tops', 'drizzle', 'sides', 'drinks', 'utensils', 'cost']
 
 with open ("data_full.csv", 'r') as file:
     header = file.readline()
-    data_array = file.readlines()
+    data_array = list(csv.reader(file, quotechar='"'))
 
-data = []
-for elem in data_array:
-    data.append(elem.split(','))
+data = data_array
 
 print(data[1])
 
@@ -78,16 +90,39 @@ while index < data_len:
     storage['added_mac'] = []
     question = data[index][2]
     result = data[index][1]
+    party = False
     if (data[index][3] == "Mac and Cheese" or data[index][3] == "Grilled Cheese Sandwich"):
         storage['cost'] = 8.99
-    else:
-        storage['cost'] = 0.0
-    print(question)
-    print(result)
+    elif (data[index][3] == "Mac and Cheese Party Tray (Plus FREE Garlic Bread)"):
+        party = True
+        storage['cost'] = 39.99
+        # info = data[index][1].split('(')
+        # item_name = info[0].strip() + " Party Tray + FREE Garlic Bread"
+        # print(info[0])
+        # items = info[1][:-1].split(',')
+
+        # for item in items:
+        #     if (item in cheeses):
+        #         storage['cheese'].append(item)
+        #     elif item in meat:
+        #         storage['meats'].append(item)
+        #     elif item in sauce:
+        #         storage['drizzles'].append(item)
+        #     else:
+        #         storage['toppings'].append(item)
+        
+
+
+        # print(info)
+
+    elif (data[index][3] == "Garlic Bread (Party Size)"):
+        storage['cost'] = 13.99
+    # print(question)
+    # print(result)
     if question == "Noods":
-        print("Noods set")
-        storage['noods'] = result
-        print(storage['noods'])
+        # print("Noods set")
+        storage['noodles'] = result
+        # print(storage['noodles'])
     
     elif question == "Choose Your Cheese":
         storage['cheese'].append(result)
@@ -178,5 +213,9 @@ while index < data_len:
     proccess.append(storage)
 
 daf = pd.DataFrame(proccess)
+print(len(daf))
+print(daf.head())
+daf.dropna(subset=['time'], inplace=True)
+print(len(daf))
 daf.to_csv('data_processed.csv', index = False)
 
