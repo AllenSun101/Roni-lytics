@@ -5,6 +5,7 @@ from datetime import *
 
 from data.utils import *
 from analytics.sales import *
+from analytics.dayweek import *
 
 data = load_data()
 special_events = load_special_events_data()
@@ -14,6 +15,9 @@ st.title("Revenue Hub")
 
 
 # Getting inputs through a container
+
+# container = st.expander("By date range")
+
 container = st.container()
 
 input = container.container()
@@ -116,4 +120,24 @@ else:
     container.write("")
     container.altair_chart(final_chart, use_container_width=True)
 
+daycontainer = st.container()
 
+input = daycontainer.container()
+left, right = input.columns(2)
+option = input.selectbox('What day do you want to see?',('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))
+
+output = container.container()
+
+test2 = rev_by_day_of_week(data, option)
+
+chart2 = alt.Chart(test2).mark_line(
+    interpolate='monotone',
+    point=True
+).encode(
+    x=alt.X('hour:Q', title = 'Hour',scale=alt.Scale(domain=[9, 22])),  
+    y=alt.Y('revenue:Q', title='Average revenue')  
+)
+
+daycontainer.write("")
+daycontainer.write("")
+daycontainer.altair_chart(chart2, use_container_width=True)

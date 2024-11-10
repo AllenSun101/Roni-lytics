@@ -4,6 +4,7 @@ from datetime import *
 
 from data.utils import *
 from analytics.orders import *
+from analytics.dayweek import *
 
 data = load_data()
 special_events = load_special_events_data()
@@ -114,3 +115,24 @@ else:
     container.altair_chart(final_chart, use_container_width=True)
 
 
+container = st.container()
+
+input = container.container()
+left, right = input.columns(2)
+option = input.selectbox('What day do you want to see?',('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))
+
+output = container.container()
+
+test = rev_orders_by_day_of_week(data, option)
+
+chart = alt.Chart(test).mark_line(
+    interpolate='monotone',
+    point=True
+).encode(
+    x=alt.X('hour:Q', title = 'Hour',scale=alt.Scale(domain=[9, 22])),  
+    y=alt.Y('Orders:Q', title='Average amount of orders')  
+)
+
+container.write("")
+container.write("")
+container.altair_chart(chart, use_container_width=True)
