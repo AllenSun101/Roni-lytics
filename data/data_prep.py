@@ -58,7 +58,7 @@ meat = ['Brisket', 'Chicken', 'Bacon']
 sauce = ['Ranch', 'Garlic Parmesan', 'Buffalo']
 
 
-FIELDS = ['orderID', 'time', 'item', 'noodles', 'added_mac', 'cheese', 'meats', 'tops', 'drizzle', 'sides', 'drinks', 'utensils', 'cost']
+FIELDS = ['orderID', 'time', 'item', 'noodles', 'added_mac', 'cheese', 'meats', 'toppings', 'drizzles', 'sides', 'drinks', 'utensils', 'cost']
 
 with open ("data_full.csv", 'r') as file:
     header = file.readline()
