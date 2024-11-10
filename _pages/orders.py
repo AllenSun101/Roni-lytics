@@ -35,7 +35,7 @@ start_datetime = datetime.combine(start_date, start_time)
 output = container.container()
 left1, right1 = output.columns(2)
 
-end_date = left1.date_input("Choose a start date:", start_date, 
+end_date = left1.date_input("Choose a end date:", start_date, 
                              min_value = start_date, 
                              max_value = data["time"].max(),
                              format = "MM/DD/YYYY",
@@ -60,7 +60,7 @@ else:
             x=alt.X('Time:T', title='Date', axis = alt.Axis(format='%B', tickCount = 4)),  
             y=alt.Y('Order Count:Q', title='Order Count')  
         )
-    elif (end_datetime - start_datetime > timedelta(days = 6)):
+    elif (end_datetime - start_datetime > timedelta(days = 7)):
         chart = alt.Chart(test).mark_line().encode(
             x=alt.X('Time:T', title='Date', axis = alt.Axis(format='%b %d')),  
             y=alt.Y('Order Count:Q', title='Order Count')  
@@ -72,7 +72,7 @@ else:
         )
     else:
         chart = alt.Chart(test).mark_line().encode(
-            x=alt.X('time:T', title = 'Date', axis = alt.Axis(format='%b-%d-%I-%p', tickCount = 14)),  
+            x=alt.X('time:T', title = 'Date', axis = alt.Axis(format='%b-%d-%I-%p', tickCount = 14, labelAngle = -30)),  
             y=alt.Y('Order Count:Q', title='Order Count')  
         )
 
@@ -81,33 +81,6 @@ else:
     container.write("")
     container.altair_chart(chart, use_container_width=True)
 
-
-    
-
-
-
-
-
-
-# container = st.container()
-# container.write("Choose period over which you want to see order count")
-
-# month = st.selectbox(
-#     "Please select month to look at stats for", 
-#     data["Sent Date"].dropna().dt.month_name().unique(),
-#     key = "month_input",
-#     index = 1
-# )
-
-# st.write("")
-# st.write("")
-# monthOrders = orders_in_month(data, month)
-# st.line_chart(monthOrders, x_label = month, y_label = "Orders")
-
-
-# dayOrders = orders_in_day(data, month, 23)
-# # print(dayOrders)
-# st.line_chart(dayOrders, x_label = f'Hour', y_label = "Orders")
 
 
     
