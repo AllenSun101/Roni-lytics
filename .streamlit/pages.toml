@@ -4,7 +4,7 @@ name = "Home"
 
 
 [[pages]]
-path = "_pages/another_page.py"
+path = "_pages/orders.py"
 name = "Orders"
 
 

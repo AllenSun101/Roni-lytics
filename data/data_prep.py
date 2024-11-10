@@ -14,7 +14,7 @@ sides = {
     "Lays Classic": 1.99,
     "Cheesy Broccoli": 2.99,
     "Any Bag Of Chips": 1.99,
-    "Side Mac": 999.99
+    "Side Mac": 8.99
 }
 
 
