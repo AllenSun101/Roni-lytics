@@ -1,13 +1,16 @@
 [[pages]]
 path = "_pages/home_page.py"
 name = "Home"
+icon = "🏡"
 
 
 [[pages]]
 path = "_pages/orders.py"
 name = "Orders"
+icon = "🧾"
 
 
 [[pages]]
 path = "_pages/sales.py"
-name = "Sales"
+name = "Revenues"
+icon = "💵"
