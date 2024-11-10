@@ -35,6 +35,11 @@ drinks = {
     "": 0.00
 }
 
+stris = '''Pickl
+ese'''
+
+print(stris)
+
 menu = {
     "Buffalo Chicken": ["Cheddar", "Chicken", "Onions", "Buffalo"],
     "Texas BBQ": ["Pepper Jack", "Brisket", "Jalapenos", "BBQ"],
@@ -132,7 +137,8 @@ while index < data_len:
         storage['cost'] += meats[result]
 
     elif question == "Choose Your Toppings":
-        storage['toppings'].append(result)
+        if (result != 'No Toppings'):
+            storage['toppings'].append(result)
 
     elif question == "Choose Your Drizzles":
         storage['drizzles'].append(result)

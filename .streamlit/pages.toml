@@ -19,3 +19,8 @@ icon = "💵"
 path = "_pages/social_media.py"
 name = "Social Media Boost"
 icon = "📸"
+
+[[pages]]
+path = "_pages/insights.py"
+name = "Insights"
+icon = "📸"
