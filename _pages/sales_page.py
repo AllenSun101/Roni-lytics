@@ -11,8 +11,9 @@ data = load_data()
 special_events = load_special_events_data()
 
 
-st.title("Revenue Hub")
+st.title("Sales Hub")
 
+st.markdown("### By Date Range")
 
 # Getting inputs through a container
 
@@ -119,6 +120,10 @@ else:
     container.write("")
     container.write("")
     container.altair_chart(final_chart, use_container_width=True)
+
+st.divider()
+st.markdown("### By Day of the Week")
+
 
 daycontainer = st.container()
 
