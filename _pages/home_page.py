@@ -1,19 +1,26 @@
 import streamlit as st
+import numpy as np
+
 from data.utils import load_data
 import analytics.summary_stats as stat
+import datetime
 
 st.title("Roni-lytics")
 
 data = load_data()
 
-for _ in range(3):  # Adjust the range for more or less space
+for _ in range(2):  # Adjust the range for more or less space
     st.write("")
 
 col1, col2, col3 = st.columns([1, 1, 1])
 
 with col1:
+    best_data = stat.best_day(data)[0]
+    date = datetime.datetime.strptime(str(best_data), "%Y-%m-%d")
+    formatted_date = date.strftime("%B %d")
+
     st.write(f"## ${stat.best_day(data)[1]:,}")
-    st.write(f"**Record Sales on {stat.best_day(data)[0]}**")
+    st.write(f"**Record Sales on {formatted_date}**")
 
 with col2:
     st.write(f"## ${stat.total_revenue(data):,}")
@@ -27,17 +34,16 @@ with col3:
 for _ in range(3):  # Adjust the range for more or less space
     st.write("")
 
-st.write("## Most Popular Items")
+st.write("### Most Popular Choices")
 
 category = st.selectbox(
     "Select Category",  # Prompt text
-    ["Item", "Noodles", "Added Mac", "Cheeses", "Meats", "Toppings", "Drizzles", "Sides", "Drinks"]  # List of hardcoded options
+    ["Item", "Noodles", "Added Mac", "Cheeses", "Meats", "Toppings", "Drizzles", "Sides", "Drinks"],  # List of hardcoded options
+    index = 5
 )
 
 
-counts = stat.aggregate_items_sold(data)
-category_map = {"Item": 0, "Noodles": 1, "Added Mac": 2, "Cheeses": 3, "Meats": 4, "Toppings": 5, "Drizzles": 6, "Sides": 7, "Drinks": 8}
-category_data = counts[category_map[category]]
+counts = stat.aggregate_items_sold(data, category) 
 
-print(category_data)
-st.bar_chart(category_data, horizontal=True)
+st.bar_chart(counts, x = category, y = "count", horizontal = True, color = "colors", x_label = "Frequency")
+

@@ -1,89 +1,60 @@
 import pandas as pd
 import ast
+import random
 
-def aggregate_items_sold(df):
+def aggregate_items_sold(df, category):
     """Returns total orders and items sold"""
 
-    item_counts = {}
-    noodles_counts = {}
-    added_mac_counts = {}
-    cheese_counts = {}
-    meats_counts = {}
-    toppings_counts = {}
-    drizzles_counts = {}
-    sides_counts = {}
-    drinks_counts = {}
+    type1 = {"Item", "Noodles"} 
+    type2 = {"Added Mac", "Cheeses", "Meats", "Toppings", "Drizzles", "Sides", "Drinks"}
 
-    for i in range(len(df)):
-        item = df.iloc[i]
+    MAP = {"Item": "item",
+           "Noodles": "noodles",
+           "Added Mac": "added_mac",
+           "Cheeses" : "cheese",
+           "Meats": "meats",
+           "Toppings": "toppings",
+           "Drizzles": "drizzles",
+           "Sides" : "sides",
+           "Drinks": "drinks"
+           }
+    
+    COLOR_BANK = [
+        "#FF5733", "#33FF57", "#5733FF", "#FF33A1", "#FF8C00", "#00FFFF", 
+        "#8A2BE2", "#DC143C", "#FF1493", "#00FF7F", "#FFD700", "#ADFF2F", 
+        "#FF6347", "#1E90FF", "#F0E68C", "#FF00FF", "#800080", "#008000", 
+        "#FF4500", "#2E8B57"
+    ]   
 
-        if item["item"] not in item_counts:
-            item_counts[item["item"]] = 1
-        else:
-            item_counts[item["item"]] += 1
+    if category in type1:
+        key = MAP[category]
+        output = df[key].value_counts().reset_index()
+        colors = random.sample(COLOR_BANK, len(output))
+        output["colors"] = colors
+        output = output.rename(columns = {MAP[category] : category})
+        return output
+    else:
+        output = {}
+        for row in range(len(df)):
+            item = df.iloc[row]
 
-        if item["noodles"] not in noodles_counts:
-            noodles_counts[item["noodles"]] = 1
-        else:
-            noodles_counts[item["noodles"]] += 1
+            fields = ast.literal_eval(item[MAP[category]])
+            fields = list(set(fields))
 
-        macs = ast.literal_eval(item["added_mac"])
-        macs = list(set(macs))
-        for mac in macs:
-            if mac not in added_mac_counts:
-                added_mac_counts[mac] = 1
-            else:
-                added_mac_counts[mac] += 1
+            for item in fields:
+                if item not in output:
+                    output[item] = 1
+                else:
+                    output[item] += 1
 
-        cheeses = ast.literal_eval(item["cheese"])
-        cheeses = list(set(cheeses))
-        for cheese in cheeses:
-            if cheese not in cheese_counts:
-                cheese_counts[cheese] = 1
-            else:
-                cheese_counts[cheese] += 1
+        output = [[key, output[key]] for key in output]
+        output = pd.DataFrame(output)
+        output = output.rename(columns = {0: category, 1: "count"})
+        output = output.sort_values(by = "count", ascending = False)
+        colors = random.sample(COLOR_BANK, len(output))
+        output["colors"] = colors
 
-        meats = ast.literal_eval(item["meats"])
-        meats = list(set(meats))
-        for meat in meats:
-            if meat not in meats_counts:
-                meats_counts[meat] = 1
-            else:
-                meats_counts[meat] += 1
-
-        toppings = ast.literal_eval(item["toppings"])
-        toppings = list(set(toppings))
-        for topping in toppings:
-            if topping not in toppings_counts:
-                toppings_counts[topping] = 1
-            else:
-                toppings_counts[topping] += 1
-
-        drizzles = ast.literal_eval(item["drizzles"])
-        drizzles = list(set(drizzles))
-        for drizzle in drizzles:
-            if drizzle not in drizzles_counts:
-                drizzles_counts[drizzle] = 1
-            else:
-                drizzles_counts[drizzle] += 1
-
-        sides = ast.literal_eval(item["sides"])
-        sides = list(set(sides))
-        for side in sides:
-            if side not in sides_counts:
-                sides_counts[side] = 1
-            else:
-                sides_counts[side] += 1
-
-        drinks = ast.literal_eval(item["drinks"])
-        drinks = list(set(drinks))
-        for drink in drinks:
-            if drink not in drinks_counts:
-                drinks_counts[drink] = 1
-            else:
-                drinks_counts[drink] += 1
-
-    return item_counts, noodles_counts, added_mac_counts, cheese_counts, meats_counts, toppings_counts, drizzles_counts, sides_counts, drinks_counts
+        return output
 
 
 def total_revenue(df):
