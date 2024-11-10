@@ -6,16 +6,16 @@ icon = "🏡"
 
 [[pages]]
 path = "_pages/orders.py"
-name = "Orders"
+name = "Orders Uncovered"
 icon = "🧾"
 
 
 [[pages]]
 path = "_pages/sales.py"
-name = "Revenues"
+name = "Revenue Insights"
 icon = "💵"
 
 [[pages]]
 path = "_pages/social_media.py"
-name = "Social Media"
+name = "Social Media Boost"
 icon = "📸"
