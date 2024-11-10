@@ -3,15 +3,21 @@ import altair as alt
 import pandas as pd
 from datetime import *
 
-from data.utils import load_data
+from data.utils import *
 from analytics.sales import *
+from analytics.dayweek import *
 
 data = load_data()
+special_events = load_special_events_data()
+
 
 st.title("Revenue Hub")
 
 
 # Getting inputs through a container
+
+# container = st.expander("By date range")
+
 container = st.container()
 
 input = container.container()
@@ -54,60 +60,84 @@ if (start_datetime > end_datetime):
     st.write(":red[Error: Start time must be before end time]")
 else:
     test = get_revenues(data, start_datetime, end_datetime)
+    events = special_events.loc[(special_events["Start_Time"] > start_datetime) & (special_events['Start_Time'] < end_datetime)]
+
 
     if (end_datetime - start_datetime > timedelta(days = 69)):
         chart = alt.Chart(test).mark_line().encode(
             x=alt.X('Time:T', title='Date', axis = alt.Axis(format='%B', tickCount = 4)),  
-            y=alt.Y('Total Revenue:Q', title='Revenue')  
+            y=alt.Y('Total Revenue:Q', title='Revenue($)')  
         )
+
+        events = pd.DataFrame({
+            'time': ['None'] * len(events) ,
+            'event_name': ['None'] * len(events)})
+        
     elif (end_datetime - start_datetime > timedelta(days = 6)):
         chart = alt.Chart(test).mark_line().encode(
             x=alt.X('Time:T', title='Date', axis = alt.Axis(format='%b %d')),  
-            y=alt.Y('Total Revenue:Q', title='Revenue')  
+            y=alt.Y('Total Revenue:Q', title='Revenue($)')  
         )
+
+        events = pd.DataFrame({
+            'time': events['Start_Time'].dt.strftime('%m-%d') ,
+            'event_name': events['Event_Name']  
+        })
+
     elif (end_datetime - start_datetime > timedelta(days = 3)):
         chart = alt.Chart(test).mark_line().encode(
             x=alt.X('Time:T', title='Date', axis = alt.Axis(format='%b %d', tickCount = 3)),  
-            y=alt.Y('Total Revenue:Q', title='Revenue')  
+            y=alt.Y('Total Revenue:Q', title='Revenue($)')  
         )
+
+        events = pd.DataFrame({
+            'time': events['Start_Time'].dt.strftime('%m-%d') ,
+            'event_name': events['Event_Name']  
+        })
     else:
         chart = alt.Chart(test).mark_line().encode(
             x=alt.X('time:T', title = 'Date', axis = alt.Axis(format='%b-%d-%I-%p', tickCount = 14)),  
-            y=alt.Y('Total Revenue:Q', title='Revenue')  
+            y=alt.Y('Total Revenue:Q', title='Revenue($)')  
         )
 
+        events = pd.DataFrame({
+            'time': events['Start_Time'],
+            'event_name': events['Event_Name']  
+        })
+    
+    annotations = alt.Chart(events).mark_rule(color='red', strokeDash=[6, 3]).encode(
+        x='time:T',
+        size=alt.value(2),
+        tooltip=[
+        alt.Tooltip('time:T', title='Date', format='%b %d'),  
+        alt.Tooltip('event_name:N', title='Event')      
+    ]
+    )
 
+
+    final_chart = chart + annotations
     container.write("")
     container.write("")
-    container.altair_chart(chart, use_container_width=True)
+    container.altair_chart(final_chart, use_container_width=True)
 
+daycontainer = st.container()
 
-    
+input = daycontainer.container()
+left, right = input.columns(2)
+option = input.selectbox('What day do you want to see?',('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))
 
+output = container.container()
 
+test2 = rev_by_day_of_week(data, option)
 
+chart2 = alt.Chart(test2).mark_line(
+    interpolate='monotone',
+    point=True
+).encode(
+    x=alt.X('hour:Q', title = 'Hour',scale=alt.Scale(domain=[9, 22])),  
+    y=alt.Y('revenue:Q', title='Average revenue')  
+)
 
-
-
-# container = st.container()
-# container.write("Choose period over which you want to see order count")
-
-# month = st.selectbox(
-#     "Please select month to look at stats for", 
-#     data["Sent Date"].dropna().dt.month_name().unique(),
-#     key = "month_input",
-#     index = 1
-# )
-
-# st.write("")
-# st.write("")
-# monthOrders = orders_in_month(data, month)
-# st.line_chart(monthOrders, x_label = month, y_label = "Orders")
-
-
-# dayOrders = orders_in_day(data, month, 23)
-# # print(dayOrders)
-# st.line_chart(dayOrders, x_label = f'Hour', y_label = "Orders")
-
-
-    
+daycontainer.write("")
+daycontainer.write("")
+daycontainer.altair_chart(chart2, use_container_width=True)

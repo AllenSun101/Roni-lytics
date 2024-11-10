@@ -1,12 +1,13 @@
 import streamlit as st
 import altair as alt
-import pandas as pd
 from datetime import *
 
-from data.utils import load_data
+from data.utils import *
 from analytics.orders import *
+from analytics.dayweek import *
 
 data = load_data()
+special_events = load_special_events_data()
 
 st.title("Orders Hub")
 
@@ -54,33 +55,84 @@ if (start_datetime > end_datetime):
     st.write(":red[Error: Start time must be before end time]")
 else:
     test = get_num_orders(data, start_datetime, end_datetime)
+    events = special_events.loc[(special_events["Start_Time"] > start_datetime) & (special_events['Start_Time'] < end_datetime)]
+    
 
     if (end_datetime - start_datetime > timedelta(days = 69)):
         chart = alt.Chart(test).mark_line().encode(
             x=alt.X('Time:T', title='Date', axis = alt.Axis(format='%B', tickCount = 4)),  
             y=alt.Y('Order Count:Q', title='Order Count')  
         )
+
+        events = pd.DataFrame({
+            'time': ['None'] * len(events) ,
+            'event_name': ['None'] * len(events)})
+        
+
     elif (end_datetime - start_datetime > timedelta(days = 7)):
         chart = alt.Chart(test).mark_line().encode(
             x=alt.X('Time:T', title='Date', axis = alt.Axis(format='%b %d')),  
             y=alt.Y('Order Count:Q', title='Order Count')  
         )
+
+        events = pd.DataFrame({
+            'time': events['Start_Time'].dt.strftime('%m-%d') ,
+            'event_name': events['Event_Name']  
+        })
+
     elif (end_datetime - start_datetime > timedelta(days = 3)):
         chart = alt.Chart(test).mark_line().encode(
             x=alt.X('Time:T', title='Date', axis = alt.Axis(format='%b %d', tickCount = 3)),  
             y=alt.Y('Order Count:Q', title='Order Count')  
         )
+
+        events = pd.DataFrame({
+            'time': events['Start_Time'].dt.strftime('%m-%d') ,
+            'event_name': events['Event_Name']  
+        })
     else:
         chart = alt.Chart(test).mark_line().encode(
             x=alt.X('time:T', title = 'Date', axis = alt.Axis(format='%b-%d-%I-%p', tickCount = 14, labelAngle = -30)),  
             y=alt.Y('Order Count:Q', title='Order Count')  
         )
 
+        
 
+
+    annotations = alt.Chart(events).mark_rule(color='red', strokeDash=[6, 3]).encode(
+        x='time:T',
+        size=alt.value(2),
+        tooltip=[
+        alt.Tooltip('time:T', title='Date', format='%b %d'),  
+        alt.Tooltip('event_name:N', title='Event')      
+    ]
+    )
+
+
+    final_chart = chart + annotations
     container.write("")
     container.write("")
-    container.altair_chart(chart, use_container_width=True)
+    container.altair_chart(final_chart, use_container_width=True)
 
 
+container = st.container()
 
-    
+input = container.container()
+left, right = input.columns(2)
+option = input.selectbox('What day do you want to see?',('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'))
+
+output = container.container()
+
+test = rev_orders_by_day_of_week(data, option)
+
+chart = alt.Chart(test).mark_line(
+    interpolate='monotone',
+    point=True
+).encode(
+    x=alt.X('hour:Q', title = 'Hour',scale=alt.Scale(domain=[9, 22])),  
+    y=alt.Y('Orders:Q', title='Average amount of orders')  
+)
+
+container.write("")
+container.write("")
+container.altair_chart(chart, use_container_width=True)
